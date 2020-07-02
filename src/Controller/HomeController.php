@@ -8,6 +8,7 @@ use App\Entity\Movie;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpBadRequestException;
@@ -60,7 +61,25 @@ class HomeController
     {
         try {
             $data = $this->twig->render('home/index.html.twig', [
-                'trailers' => $this->fetchData(),
+                'trailers' => $this->fetchData()
+            ]);
+        } catch (\Exception $e) {
+            throw new HttpBadRequestException($request, $e->getMessage(), $e);
+        }
+
+        $response->getBody()->write($data);
+
+        return $response;
+    }
+
+    public function show(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+
+        $id = $request->getAttribute('id');
+
+        try {
+            $data = $this->twig->render('home/show.html.twig', [
+                'trailer' => $this->em->getRepository(Movie::class)->find($id)
             ]);
         } catch (\Exception $e) {
             throw new HttpBadRequestException($request, $e->getMessage(), $e);

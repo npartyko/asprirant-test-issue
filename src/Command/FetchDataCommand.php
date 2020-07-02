@@ -126,12 +126,20 @@ class FetchDataCommand extends Command
         if (!property_exists($xml, 'channel')) {
             throw new RuntimeException('Could not find \'channel\' element in feed');
         }
+        $count = 0;
         foreach ($xml->channel->item as $item) {
+            $count++;
+
+            if ($count > 10) {
+                break;
+            }
+
             $trailer = $this->getMovie((string) $item->title)
                 ->setTitle((string) $item->title)
                 ->setDescription((string) $item->description)
                 ->setLink((string) $item->link)
                 ->setPubDate($this->parseDate((string) $item->pubDate))
+                ->setImage($item->link.'/images/poster.jpg')
             ;
 
             $this->doctrine->persist($trailer);
@@ -159,7 +167,9 @@ class FetchDataCommand extends Command
      */
     protected function getMovie(string $title): Movie
     {
-        $item = $this->doctrine->getRepository(Movie::class)->findOneBy(['title' => $title]);
+        $item = $this->doctrine
+            ->getRepository(Movie::class)
+            ->findOneBy(['title' => $title]);
 
         if ($item === null) {
             $this->logger->info('Create new Movie', ['title' => $title]);
