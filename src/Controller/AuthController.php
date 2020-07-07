@@ -68,6 +68,11 @@ class AuthController
 
     public function getSignUp(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
+        if ($this->auth->check()) {
+            return $response
+                ->withHeader('Location',"/")
+                ->withStatus(200);
+        }
 
         $data = $this->twig->render('auth/signup.html.twig');
 
@@ -78,6 +83,11 @@ class AuthController
 
     public function getSignIn(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
+        if ($this->auth->check()) {
+            return $response
+                ->withHeader('Location',"/")
+                ->withStatus(200);
+        }
 
         $data = $this->twig->render('auth/signin.html.twig');
 
