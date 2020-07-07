@@ -9,3 +9,36 @@ show:
   path: '{id}'
   controller: App\Controller\HomeController
   action: show
+
+
+auth.get_sign_up:
+  method: 'get'
+  path: 'auth/sign_up'
+  controller: App\Controller\AuthController
+  action: getSignUp
+
+auth.get_sign_in:
+  method: 'get'
+  path: 'auth/sign_in'
+  controller: App\Controller\AuthController
+  action: getSignIn
+
+
+auth.sign_up:
+  method: 'post'
+  path: 'auth/sign_up'
+  controller: App\Controller\AuthController
+  action: signUp
+
+auth.sign_in:
+  method: 'post'
+  path: 'auth/sign_in'
+  controller: App\Controller\AuthController
+  action: signIn
+
+
+auth.signout:
+  method: 'get'
+  path: 'auth/sign_out'
+  controller: App\Controller\AuthController
+  action: signOut

@@ -3,13 +3,24 @@
 
 {% block content %}
     <div class="container">
-        <table class="table table-bordered">
-                <tr>
-                    <td><a href="{{ trailer.id }}">{{ trailer.title }}</a></td>
-                    <td><img src="{{ trailer.image }}"></td>
-                    <td>{{ trailer.description }}</td>
-                </tr>
-        </table>
-        <a href="/">Назад</a>
+        <div class="card mb-3">
+            <div class="row no-gutters">
+                <div class="col-md-4">
+                    <img src="{{ trailer.image }}" class="card-img">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ trailer.title }}</h5>
+                        <p class="card-text">{{ trailer.description }}</p>
+                        <div>
+                            <a href="{{ trailer.link }}" target="_blank" class="card-text">
+                                <small class="text-muted">Источник</small>
+                            </a>
+                        </div>
+                        <a href="/" class="btn btn-primary">На главную</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

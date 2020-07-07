@@ -11,10 +11,18 @@ use Slim\Middleware\ErrorMiddleware;
 use Slim\Middleware\RoutingMiddleware;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
+
+
+
+if(session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 $container = require dirname(__DIR__) . '/bootstrap.php';
 $request = ServerRequestFactory::createFromGlobals();
 
 Slim\Factory\AppFactory::create();
+
 
 $app = new App(
     $container->get(ResponseFactoryInterface::class),
