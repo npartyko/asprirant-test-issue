@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Movie;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\User;
+use App\Validation\Validator;
+
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Exception\HttpBadRequestException;
 use Slim\Interfaces\RouteCollectorInterface;
 use Twig\Environment;
+use Respect\Validation\Validator as v;
 
 /**
  * Class AuthController.
@@ -36,17 +35,25 @@ class AuthController
     private $em;
 
     /**
+     * @var Validator
+     */
+    private $validator;
+
+    /**
      * AuthController constructor.
      *
      * @param RouteCollectorInterface $routeCollector
      * @param Environment             $twig
      * @param EntityManagerInterface  $em
+     * @param Validator  $validator
      */
-    public function __construct(RouteCollectorInterface $routeCollector, Environment $twig, EntityManagerInterface $em)
+    public function __construct(RouteCollectorInterface $routeCollector, Environment $twig, EntityManagerInterface $em, Validator $validator)
     {
         $this->routeCollector = $routeCollector;
         $this->twig = $twig;
         $this->em = $em;
+        $this->validator = $validator;
+
     }
 
     public function getSignUp(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -62,14 +69,32 @@ class AuthController
 
     public function signUp(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
+        $this->validator->validate($request, [
+            'username' => v::NotEmpty()->stringVal()->uniqueRule($this->em, User::class, 'username'),
+            'password' => v::NotEmpty()->stringVal(),
+        ]);
 
-        $request = $request->getParsedBody();
+        $data = $request->getParsedBody();
 
-        $data = $this->twig->render('auth/signup.html.twig');
+        if ($this->validator->fail()) {
 
-        $response->getBody()->write($data);
+            $response->getBody()->write(json_encode($this->validator->getErrors()));
+            return $response
+                ->withHeader('Content-Type',"application/json;charset='utf-8")
+                ->withStatus(422);
+        }
 
-        return $response;
+        $user = (new User())
+            ->setUsername($data['username'])
+            ->setPassword($data['password']);
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $response->getBody()->write(json_encode(['status' => true]));
+        return $response
+            ->withHeader('Content-Type',"application/json;charset='utf-8")
+            ->withStatus(200);
     }
 
 

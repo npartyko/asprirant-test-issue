@@ -6,18 +6,66 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 col-auto">
-                <form action="/auth/signup" method="post">
+                <form id="formSignUp" method="post">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Username</label>
-                        <input type="text" class="form-control" name="username" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="text" class="form-control" name="username" id="exampleInputEmail1"
+                               aria-describedby="emailHelp">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">Password</label>
                         <input type="password" class="form-control" name="password" id="exampleInputPassword1">
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" id="signUpBtn" class="btn btn-primary">Submit</button>
                 </form>
             </div>
         </div>
     </div>
+
+    <script>
+      const btnSubmit = document.querySelector('#signUpBtn')
+      const formSignUp = document.querySelector('#formSignUp')
+      const myHttp = http()
+
+      btnSubmit.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        signUp();
+
+      })
+
+      function signUp() {
+        const data = new FormData(formSignUp);
+
+        myHttp.post('/auth/signup', data, null, (err, res) => {
+            if (err) {
+              const errors = JSON.parse(res.responseText)
+
+              clear()
+
+              Object.keys(errors).forEach((item) => {
+                const input = formSignUp[item]
+                input.classList.add('is-invalid')
+                input.insertAdjacentHTML('afterend', `<div class="invalid-feedback">${errors[item]}</div>`)
+              })
+            } else {
+              clear()
+
+              document.location.replace('/');
+            }
+        })
+
+        function clear() {
+          formSignUp.querySelectorAll(".invalid-feedback").forEach((e) => {
+            e.parentNode.removeChild(e)
+          });
+
+          formSignUp.querySelectorAll("input").forEach((e) => {
+            e.classList.remove('is-invalid')
+          });
+
+        }
+      }
+    </script>
 {% endblock %}
+

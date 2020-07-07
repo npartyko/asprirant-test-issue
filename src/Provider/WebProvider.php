@@ -11,6 +11,7 @@ use App\Controller\AuthController;
 use App\Controller\HomeController;
 use App\Support\Config;
 use App\Support\ServiceProviderInterface;
+use App\Validation\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Slim\Interfaces\RouteCollectorInterface;
@@ -41,11 +42,20 @@ class WebProvider implements ServiceProviderInterface
     protected function defineControllerDi(Container $container): void
     {
         $container->set(HomeController::class, static function (ContainerInterface $container) {
-            return new HomeController($container->get(RouteCollectorInterface::class), $container->get(Environment::class), $container->get(EntityManagerInterface::class));
+            return new HomeController(
+                $container->get(RouteCollectorInterface::class),
+                $container->get(Environment::class),
+                $container->get(EntityManagerInterface::class)
+            );
         });
 
         $container->set(AuthController::class, static function (ContainerInterface $container) {
-            return new AuthController($container->get(RouteCollectorInterface::class), $container->get(Environment::class), $container->get(EntityManagerInterface::class));
+            return new AuthController(
+                $container->get(RouteCollectorInterface::class),
+                $container->get(Environment::class),
+                $container->get(EntityManagerInterface::class),
+                $container->get(Validator::class)
+            );
         });
     }
 
