@@ -78,7 +78,7 @@ final class User
      */
     public function setPassword(string $password): self
     {
-        $this->password = password_hash($password,PASSWORD_BCRYPT);
+        $this->password = password_hash($password,PASSWORD_DEFAULT);
 
         return $this;
     }

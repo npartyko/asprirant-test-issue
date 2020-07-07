@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace App\Provider;
 
+use App\Auth\Auth;
 use App\Controller\AuthController;
 use App\Controller\HomeController;
 use App\Support\Config;
@@ -54,7 +55,8 @@ class WebProvider implements ServiceProviderInterface
                 $container->get(RouteCollectorInterface::class),
                 $container->get(Environment::class),
                 $container->get(EntityManagerInterface::class),
-                $container->get(Validator::class)
+                $container->get(Validator::class),
+                $container->get(Auth::class)
             );
         });
     }

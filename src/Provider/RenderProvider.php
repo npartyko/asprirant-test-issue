@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Provider;
 
+use App\Auth\Auth;
 use App\Support\Config;
 use App\Support\ServiceProviderInterface;
 use Psr\Container\ContainerInterface;
@@ -33,7 +34,15 @@ class RenderProvider implements ServiceProviderInterface
                 'cache' => empty($cache) || $container->get(Config::class)->get('environment') === 'dev' ? false : $cache,
             ];
 
-            return new Environment($loader, $options);
+            $twig = new Environment($loader, $options);
+
+            $twig->addGlobal('auth', [
+                'check' => $container->get(Auth::class)->check(),
+                'user' => $container->get(Auth::class)->user(),
+            ]);
+
+
+            return $twig;
         });
     }
 }

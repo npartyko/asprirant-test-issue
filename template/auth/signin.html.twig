@@ -6,7 +6,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 col-auto">
-                <form id="formSignUp" method="post">
+                <form id="formSignIn" method="post">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Username</label>
                         <input type="text" class="form-control" name="username" id="exampleInputEmail1"
@@ -16,7 +16,7 @@
                         <label for="exampleInputPassword1">Password</label>
                         <input type="password" class="form-control" name="password" id="exampleInputPassword1">
                     </div>
-                    <button type="submit" id="signUpBtn" class="btn btn-primary">Sign up</button>
+                    <button type="submit" id="signUpBtn" class="btn btn-primary">Sign in</button>
                 </form>
             </div>
         </div>
@@ -24,20 +24,20 @@
 
     <script>
       const btnSubmit = document.querySelector('#signUpBtn')
-      const formSignUp = document.querySelector('#formSignUp')
+      const formSignUp = document.querySelector('#formSignIn')
       const myHttp = http()
 
       btnSubmit.addEventListener('click', function (e) {
         e.preventDefault();
 
-        signUp();
+        signIn();
 
       })
 
-      function signUp() {
+      function signIn() {
         const data = new FormData(formSignUp);
 
-        myHttp.post('/auth/sign_up', data, null, (err, res) => {
+        myHttp.post('/auth/sign_in', data, null, (err, res) => {
             if (err) {
               const errors = JSON.parse(res.responseText)
 
