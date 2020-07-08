@@ -36,8 +36,8 @@
                   cb(true, xhr);
                   return;
                 }
-                const response = JSON.parse(xhr.responseText);
-                cb(null, response);
+
+                cb(null, xhr);
               });
 
               xhr.addEventListener('error', () => {

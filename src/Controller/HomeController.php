@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Auth\Auth;
 use App\Entity\Movie;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -36,17 +37,23 @@ class HomeController
     private $em;
 
     /**
+     * @var Auth
+     */
+    private $auth;
+
+    /**
      * HomeController constructor.
      *
      * @param RouteCollectorInterface $routeCollector
      * @param Environment             $twig
      * @param EntityManagerInterface  $em
      */
-    public function __construct(RouteCollectorInterface $routeCollector, Environment $twig, EntityManagerInterface $em)
+    public function __construct(RouteCollectorInterface $routeCollector, Environment $twig, EntityManagerInterface $em, Auth $auth)
     {
         $this->routeCollector = $routeCollector;
         $this->twig = $twig;
         $this->em = $em;
+        $this->auth = $auth;
     }
 
     /**
@@ -96,7 +103,7 @@ class HomeController
     protected function fetchData(): Collection
     {
         $data = $this->em->getRepository(Movie::class)
-            ->findAll();
+            ->allWithLike($this->auth->check() ? $this->auth->user()->getId() : null);
 
         return new ArrayCollection($data);
     }

@@ -33,7 +33,15 @@ final class User
      */
     private $password;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Movie", inversedBy="users")
+     * @ORM\JoinTable(name="users_movies")
+     */
+    private $movies;
 
+    public function __construct() {
+        $this->movies = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * @return int|null
@@ -81,6 +89,12 @@ final class User
         $this->password = password_hash($password,PASSWORD_DEFAULT);
 
         return $this;
+    }
+
+
+    public function getMovies()
+    {
+        return $this->movies;
     }
 
 }

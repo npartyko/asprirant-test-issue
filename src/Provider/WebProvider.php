@@ -10,6 +10,8 @@ namespace App\Provider;
 use App\Auth\Auth;
 use App\Controller\AuthController;
 use App\Controller\HomeController;
+use App\Controller\LikeController;
+use App\Middleware\AuthMiddleware;
 use App\Support\Config;
 use App\Support\ServiceProviderInterface;
 use App\Validation\Validator;
@@ -17,6 +19,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Slim\Interfaces\RouteCollectorInterface;
 use Slim\Interfaces\RouteCollectorProxyInterface;
+use function Sodium\add;
 use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
 use UltraLite\Container\Container;
@@ -46,12 +49,23 @@ class WebProvider implements ServiceProviderInterface
             return new HomeController(
                 $container->get(RouteCollectorInterface::class),
                 $container->get(Environment::class),
-                $container->get(EntityManagerInterface::class)
+                $container->get(EntityManagerInterface::class),
+                $container->get(Auth::class)
             );
         });
 
         $container->set(AuthController::class, static function (ContainerInterface $container) {
             return new AuthController(
+                $container->get(RouteCollectorInterface::class),
+                $container->get(Environment::class),
+                $container->get(EntityManagerInterface::class),
+                $container->get(Validator::class),
+                $container->get(Auth::class)
+            );
+        });
+
+        $container->set(LikeController::class, static function (ContainerInterface $container) {
+            return new LikeController(
                 $container->get(RouteCollectorInterface::class),
                 $container->get(Environment::class),
                 $container->get(EntityManagerInterface::class),
@@ -71,8 +85,12 @@ class WebProvider implements ServiceProviderInterface
         $router->group('/', function (RouteCollectorProxyInterface $router) use ($container) {
             $routes = self::getRoutes($container);
             foreach ($routes as $routeName => $routeConfig) {
-                $router->{$routeConfig['method']}($routeConfig['path'] ?? '', $routeConfig['controller'] . ':' . $routeConfig['action'])
+                $q = $router->{$routeConfig['method']}($routeConfig['path'] ?? '', $routeConfig['controller'] . ':' . $routeConfig['action'])
                     ->setName($routeName);
+
+                if (isset($routeConfig['middleware'])) {
+                    $q->add(new $routeConfig['middleware']($container));
+                }
             }
         });
     }

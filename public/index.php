@@ -11,9 +11,6 @@ use Slim\Middleware\ErrorMiddleware;
 use Slim\Middleware\RoutingMiddleware;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
-
-
-
 if(session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -34,5 +31,4 @@ $app = new App(
 
 $app->add($container->get(RoutingMiddleware::class));
 $app->add($container->get(ErrorMiddleware::class));
-
 $app->run($request);
