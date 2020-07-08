@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Provider;
 
+use App\Auth\Auth;
 use App\Support\{CommandMap, Config, LoggerErrorHandler, NotFoundHandler, ServiceProviderInterface};
+use App\Validation\Rules\UniqueRule;
+use App\Validation\Validator;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 use Monolog\{Formatter\FormatterInterface, Handler\HandlerInterface, Logger};
@@ -12,6 +16,7 @@ use Psr\{Container\ContainerInterface,
     Http\Client\ClientInterface,
     Http\Message\ResponseFactoryInterface,
     Log\LoggerInterface};
+use Respect\Validation\Factory;
 use Slim\{CallableResolver,
     Exception\HttpNotFoundException,
     Interfaces\CallableResolverInterface,
@@ -24,6 +29,8 @@ use Slim\{CallableResolver,
     Routing\RouteResolver};
 use Twig\Environment;
 use UltraLite\Container\Container;
+use Respect\Validation\Validator as v;
+
 
 /**
  * Application service provider.
@@ -153,5 +160,15 @@ class AppProvider implements ServiceProviderInterface
         $container->set(ClientInterface::class, static function (ContainerInterface $container) {
             return $container->get(GuzzleAdapter::class);
         });
+
+
+        $container->set(Auth::class, static function (ContainerInterface $container) {
+            return new Auth(
+                $container->get(EntityManagerInterface::class)
+            );
+        });
+
+
+
     }
 }

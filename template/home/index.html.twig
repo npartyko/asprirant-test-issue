@@ -5,12 +5,60 @@
 {% block content %}
     <div class="container">
         <h1 class="mt-5 mb-4">{{ trailers | length }} iTunes Movie trailers</h1>
-        <table class="table table-bordered">
+        <div class="row" id="trailer_container">
             {% for trailer in trailers %}
-                <tr>
-                    <td>{{ trailer.title }}</td>
-                </tr>
+                <div class="col-4">
+                    <div class="card">
+                        <img src="{{ trailer.image }}" class="card-img-top">
+                        <a href="#" data-state="{{ trailer.like }}" data-id="{{ trailer.id }}"
+                           class="btn-like btn btn-outline-danger {% if trailer.like %} active {% endif %}"
+                           style="position: absolute; margin: 5px; right: 0;" role="button" aria-pressed="true">like</a>
+                        <div class="card-body">
+                            <a class="card-title" href="{{ trailer.id }}">{{ trailer.title }}</a>
+                        </div>
+                    </div>
+                </div>
+
             {% endfor %}
-        </table>
+        </div>
     </div>
+
+    <script>
+      const container = document.querySelector('#trailer_container')
+      const myHttp = http()
+
+      container.addEventListener('click', function (e) {
+        if (e.target.classList.contains('btn-like')) {
+          e.preventDefault();
+          const state = e.target.attributes.getNamedItem('data-state').value;
+          const id = e.target.attributes.getNamedItem('data-id').value;
+
+          const formData = new FormData();
+          formData.set('id', id)
+          formData.append('state', !state)
+
+          like(formData, e.target)
+        }
+      })
+
+      function like(data, input) {
+        myHttp.post('/like_toggle', data, null, (err, res) => {
+          if (res.status === 401) {
+            document.location.replace('/auth/sign_in')
+          }
+          if (res.status === 200) {
+            input.classList.toggle('active');
+            input.attributes.getNamedItem('data-state').value = !data.get('state')
+          }
+        })
+      }
+
+      function addActiveClass(item) {
+        item.ClassList.add(['active'])
+      }
+
+      function removeActiveClass(item) {
+        item.ClassList.remove(['active'])
+      }
+    </script>
 {% endblock %}
