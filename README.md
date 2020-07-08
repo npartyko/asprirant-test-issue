@@ -42,3 +42,10 @@ TODO
 * Unit tests
 * Refactor router
 * Refactor middleware
+
+Время выполнения
+--------------
+
+* Middle уровень - 20 мин
+* Авторизация и валидация 4 часа
+* Отметка нравится - 4 часа
