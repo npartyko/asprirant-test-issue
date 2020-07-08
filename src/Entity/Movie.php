@@ -55,6 +55,20 @@ final class Movie
     private $image;
 
     /**
+     * @ORM\ManyToMany(targetEntity="User", mappedBy="movies")
+     */
+    private $users;
+
+    /**
+     * @var integer|null
+     */
+    private $like;
+
+    public function __construct() {
+        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * @return string|null
      */
     public function getImage(): ?string
@@ -158,6 +172,21 @@ final class Movie
     public function setPubDate(?\DateTime $pubDate): self
     {
         $this->pubDate = $pubDate;
+
+        return $this;
+    }
+
+    public function getUsers() {
+        return $this->users;
+    }
+
+    public function getLike() {
+        return $this->like;
+    }
+
+    public function setLike(?bool $like): self
+    {
+        $this->like = $like;
 
         return $this;
     }

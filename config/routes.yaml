@@ -11,6 +11,7 @@ show:
   action: show
 
 
+
 auth.get_sign_up:
   method: 'get'
   path: 'auth/sign_up'
@@ -42,3 +43,11 @@ auth.signout:
   path: 'auth/sign_out'
   controller: App\Controller\AuthController
   action: signOut
+
+
+like_toggle:
+  method: 'post'
+  path: 'like_toggle'
+  controller: App\Controller\LikeController
+  action: toggle
+  middleware: App\Middleware\AuthMiddleware
